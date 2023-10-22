@@ -1,21 +1,23 @@
+
 """
 Run file for heat exchanger crossflow solver
 
 Author: Andrew Lock
+Date edited: October 2023
 
 Note This is mostly old and poorly written code.
 One day it will be re-written with best practices.
 """
 
-import hx_crossflow_solver as hx_solver
-from CoolProp.CoolProp import PropsSI as CP
-import numpy as np
 import csv
-from itertools import zip_longest
 import os
 import datetime
 import pandas as pd
+import numpy as np
+from itertools import zip_longest
 from matplotlib import pyplot as plt
+
+import hx_crossflow_solver as hx_solver
 
 
 # -----------Model Inputs------------------------------------------
@@ -168,7 +170,6 @@ def plot(result_dict, G):
 
 # --------------------Main run script------------------------------------
 
-
 def main(X0=None, mod=None, verbosity=1):
     ret = hx_solver.solve(hx_inputs, X0=X0, fig_switch=0, mod=mod, verbosity=verbosity)
 
@@ -202,13 +203,14 @@ def main(X0=None, mod=None, verbosity=1):
     directory = "results_" + date
     if not os.path.exists(directory):
         os.makedirs(directory)
+    filepath = os.path.join(directory, filename)
 
     data_lists = [
         [a] if isinstance(a, float) else list(a) for a in result_dict.values()
     ]
     write_data = zip_longest(*data_lists, fillvalue="")
 
-    with open(directory + "/" + filename, "w", newline="") as result_file:
+    with open(filepath, "w", newline="") as result_file:
         writer = csv.writer(result_file)
         writer.writerow(result_dict.keys())
         for row in write_data:

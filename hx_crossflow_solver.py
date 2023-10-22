@@ -1,3 +1,4 @@
+
 """ Element-based cross-flow heat exchanger model for complex fluids
 
 Author: Andrew Lock
@@ -9,20 +10,14 @@ One day it will be re-written with best practices.
 Refer to publication for details: 10.1016/j.applthermaleng.2019.114390
 """
 
-import time
 import numpy as np
 import CoolProp as CPCP
 from CoolProp.CoolProp import PropsSI as CP
 import scipy as sci
 from scipy import optimize
 import matplotlib.pyplot as plt
-from getopt import getopt
 from statistics import mean
-import sys
 from scipy.interpolate import interp1d
-import csv
-from itertools import zip_longest
-from scipy import interpolate
 
 
 global EosPF
@@ -129,9 +124,15 @@ class Geometry:
             np.linspace(self.dx / 2, self.HX_length - self.dx / 2, self.n_CPR),
             self.n_rows,
         )
-        self.row_pf = np.array([np.full(self.n_CPR+1, i) for i in range(self.n_rows)]).flatten()
-        self.row_air = np.array([np.full(self.n_CPR, i) for i in range(self.n_rows+1)]).flatten()
-        self.row_wall = np.array([np.full(self.n_CPR, i) for i in range(self.n_rows)]).flatten()
+        self.row_pf = np.array(
+            [np.full(self.n_CPR + 1, i) for i in range(self.n_rows)]
+        ).flatten()
+        self.row_air = np.array(
+            [np.full(self.n_CPR, i) for i in range(self.n_rows + 1)]
+        ).flatten()
+        self.row_wall = np.array(
+            [np.full(self.n_CPR, i) for i in range(self.n_rows)]
+        ).flatten()
 
 
 class Fluid:
@@ -245,7 +246,7 @@ def calc_Nu(
         h_w, Cp_w, mu_w, k_w, Pr_w = GetFluidPropLow(
             EosPF,
             [CPCP.PT_INPUTS, P, Tw],
- e          [
+            e[
                 CPCP.iHmass,
                 CPCP.iCpmass,
                 CPCP.iviscosity,
@@ -696,7 +697,7 @@ def crit_temp_object():
             disp=False,
         )
         T_array.append(Tcrit[0])
-    crit_inter = interpolate.interp1d(P_array, T_array, fill_value="extrapolate")
+    crit_inter = interp1d(P_array, T_array, fill_value="extrapolate")
     return crit_inter
 
 
@@ -1043,10 +1044,8 @@ def solve(hx_inputs, mod=None, X0=None, fig_switch=0, verbosity=0):
         "dT": dT,
         "mdot_vec": mdot_vec,
         "G": G,
-        'p_pf': PH ,
-        'T_pf_out': T_out,
-
-        
+        "p_pf": PH,
+        "T_pf_out": T_out,
     }
 
     return result_dict
@@ -1585,7 +1584,10 @@ def equations(X, G, F, M, I, flag, CT):
                 -km_amb
                 * G.A_amb
                 / G.pitch_longitudal
-                * (0.5 * (T_air[i] + T_air[node_amb_i3]) - 0.5 * (T_air[node_amb_i1] + T_air[i]))
+                * (
+                    0.5 * (T_air[i] + T_air[node_amb_i3])
+                    - 0.5 * (T_air[node_amb_i1] + T_air[i])
+                )
             )
 
         # Wall conduction
@@ -1861,17 +1863,6 @@ def GetFluidPropLow(Eos, state, props):
             outputProps = outputProps[0]
         # MyError('Invalid fluid specified.')
         return outputProps
-
-
-def writeResults(a, b, c):
-    Raw_results = [a, b, c]
-
-    Results = zip_longest(*Raw_results, fillvalue=" ")
-
-    with open("Results\\Results.csv", "w", newline="") as results_file:
-        writer = csv.writer(results_file)
-        for row in Results:
-            writer.writerow(row)
 
 
 # COOLING TOWER FUNCTIONS ---------------------------------------------------------------------
