@@ -1,0 +1,44 @@
+
+import AL_ACHX_Crossflow_NDDCT_CPmod
+
+
+
+def main():
+    T0i = [0]
+    TC_out_ave, dp_amb_total, T, Q_PF = AL_ACHX_Crossflow_NDDCT_CPmod.main(ACHX_inputs,T0i=T0i,fig_switch=1)
+    print(TC_out_ave)
+    print(dp_amb_total)
+    print(T[-1])
+    print(Q_PF)
+
+def ACHX_inputs(G,F,M):    
+    G.HX_length = 1.2
+    G.n_rows = 6  # - Number of rows (deep) of heat exchanger
+    G.n_tubesPR = 8
+    G.pitch_longitudal = 0.05022 # - (m) Longitudal tube pitch 
+    G.pitch_transverse =  0.058  # - s(m) Transverse tube pitch
+    G.ID = 0.0234   # (m) ID of HX pipe
+    G.t_wall = 0.001 # (m) Thickness of pipe wall
+    G.dx_i = 0.3 # (m) Initial length of pipe discretisation
+    G.k_wall = 237 # (W/m) Thermal conductivity of pipe wall
+    G.D_fin = 0.05715  # (m) Maximum diameter of fin
+    G.pitch_fin = 0.0028 # (m) Fin pitch
+    G.t_fin = 0.0005 # (m) Mean thickness of pipe fin
+    G.k_fin = 230 # (m) 
+
+    M.Nu_CorrelationH = 2    # set correlation for heat transfer in H channel
+    M.alpha_CorrelationC = 4 # set correlation for heat transfer in C channel
+    M.f_CorrelationH = 2 # set correlation for friction factor in H channel
+    M.f_CorrelationC = 2 # set correlation for friction factor in C channel 
+
+    F.PF_fluid  = 'CO2'       
+    F.Amb_fluid  = 'Air'
+    F.T_PF_in  = 273.15+45 # (K)
+    F.mdot_PF  = 0.2
+    F.P_PF_in  = 7.96*10**6 # 7.96 * 10**6 # 7.96*10**6 # 7.96*10**6 # pressure (Pa)
+    F.TC_in  = 273.15+20 # (K)
+    F.vC_in  =1.5 # (m/s)
+    F.P_amb_in  = 101325 # pressure (Pa)
+    F.TC_outlet_guess = 273.155+30 # Air side outlet guess for initialisation (K)
+
+main()
