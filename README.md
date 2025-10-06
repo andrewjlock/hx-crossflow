@@ -1,1 +1,1 @@
-# Cross-flow Heat Exchanger with nonlinear property fluids
+# Cross-flow heat exchanger model for nonlinear-property fluids
